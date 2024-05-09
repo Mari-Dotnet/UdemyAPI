@@ -1,20 +1,19 @@
 using API.Data;
+using API.interfaces;
+using API.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using API.Extension;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
-builder.Services.AddDbContext<DataContext>(options=>
-{
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
- });
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddCors();
-
+builder.Services.AddApplicationService(builder.Configuration);
+builder.Services.AddJwtExtension(builder.Configuration);
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -35,7 +34,8 @@ app.UseCors(builder =>
         .AllowAnyMethod()
         .AllowAnyHeader();
     });
-
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
