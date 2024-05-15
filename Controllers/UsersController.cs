@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 
 namespace API.Controllers
 {
-    [Authorize]
+    [AllowAnonymous]
     public class UsersController : BaseApiController
     {
         private readonly DataContext _context;
@@ -34,4 +34,4 @@ namespace API.Controllers
             return user;
         }
     }
-}
+}   
