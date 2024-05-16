@@ -1,11 +1,5 @@
-using API.Data;
-using API.interfaces;
-using API.Services;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using API.Extension;
+    using API.Extension;
+using API.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +9,8 @@ builder.Services.AddControllers();
 builder.Services.AddApplicationService(builder.Configuration);
 builder.Services.AddJwtExtension(builder.Configuration);
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
