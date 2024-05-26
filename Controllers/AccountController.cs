@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using API.interfaces;
 using SQLitePCL;
 using Microsoft.AspNetCore.Authorization;
+using AutoMapper;
 
 namespace API.Controllers
 {
@@ -15,12 +16,47 @@ namespace API.Controllers
     public class AccountController:BaseApiController
     {
         private readonly DataContext _context;
-         private readonly ITokenservice _tokenservice;
+        private readonly ITokenservice _tokenservice;
+        private readonly IMapper _mapper;
 
-         public AccountController(DataContext context, ITokenservice tokenservice)
+
+        public AccountController(DataContext context, ITokenservice tokenservice,
+                                IMapper mapper)
         {
             _context = context;
             _tokenservice=tokenservice;
+            _mapper = mapper;
+        }
+
+        [HttpPost("registercheck")] //Post: api/account/register
+        public async Task<ActionResult<UserDto>> UserRegister(UserRegisterDTO model)
+        {
+            try
+            {
+                Random rnd = new Random();
+                if (await IsUserExist(model.UserName)) return BadRequest("User already exist");
+                AppUser RegisterModel = _mapper.Map<AppUser>(model);
+                using var hmac = new HMACSHA512();
+                RegisterModel.UserName = model.UserName;
+                RegisterModel.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(model.Password));
+                RegisterModel.PasswordSalt = hmac.Key;
+                RegisterModel.Photos = new List<Photo>()
+            {
+                new Photo(){Url=model.Url,IsMain=true,PublicId= Convert.ToString(rnd.Next(1,1000))},
+            };
+                _context.Users.Add(RegisterModel);
+                await _context.SaveChangesAsync();
+                return new UserDto()
+                {
+                    UserName = model.UserName,
+                    Token = _tokenservice.CreateToken(RegisterModel)
+                };
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
+            
         }
 
         [HttpPost("register")] //Post: api/account/register

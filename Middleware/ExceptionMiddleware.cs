@@ -18,11 +18,10 @@ namespace API.Middleware
             _env=env;
         }
 
-        public async  Task InvokeAsync(HttpContext context)
+        public async Task InvokeAsync(HttpContext context)
         {
             try{
                 await _next(context);
-                
             }catch(Exception ex){
                     _logger.LogError(ex,ex.Message);
                     context.Response.ContentType = "application/json";
