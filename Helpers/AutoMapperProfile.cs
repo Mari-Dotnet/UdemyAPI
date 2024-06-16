@@ -13,6 +13,8 @@ namespace API.Helpers
             CreateMap<AppUser,MemberDto>().ForMember(des=>des.Url,opt=>opt.MapFrom(src=>src.Photos.FirstOrDefault(x=>x.IsMain ).Url))
                 .ForMember(dest=>dest.Age,opt=>opt.MapFrom(src=>src.DateOfBirth.CalCulateAge()));
             CreateMap<Photo,PhotoDto>();
+            CreateMap<MemberUpdateDto, AppUser>().ReverseMap();
+
         }
     }
 }

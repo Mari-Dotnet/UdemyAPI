@@ -54,7 +54,7 @@ namespace API.Data
         {
             return await _dataContext.Users
                 .Include(x => x.Photos)
-                .FirstOrDefaultAsync(x=>x.UserName.Equals(UserName,StringComparison.CurrentCultureIgnoreCase));
+                .FirstOrDefaultAsync(x => x.UserName.Equals(UserName));
         }
 
         public async Task<bool> SaveAllAsync()

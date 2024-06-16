@@ -11,6 +11,17 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddApplicationService(builder.Configuration);
 builder.Services.AddJwtExtension(builder.Configuration);
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        builder =>
+        {
+            builder.AllowAnyOrigin()
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
+        });
+});
+
 var app = builder.Build();
 
 //configure http request pipeline 
@@ -33,6 +44,8 @@ app.UseCors(builder =>
         .AllowAnyMethod()
         .AllowAnyHeader();
     });
+
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
